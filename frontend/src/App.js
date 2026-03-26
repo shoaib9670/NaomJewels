@@ -575,6 +575,13 @@ const AuthModal = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
 
+  // Reset form when switching modes or closing modal
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    setFormData({ name: "", email: "", password: "" });
+    setError("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -661,7 +668,7 @@ const AuthModal = () => {
         <p className="text-center text-sm text-gray-500 mt-6">
           {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button 
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={toggleMode}
             className="ml-1 text-[#C99A82] hover:underline"
             data-testid="toggle-auth-mode"
           >

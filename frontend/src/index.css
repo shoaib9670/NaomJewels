@@ -215,7 +215,7 @@ input:focus, textarea:focus, select:focus {
 /* Chat widget styles */
 .chat-widget {
   position: fixed;
-  bottom: 24px;
+  bottom: 100px;
   right: 24px;
   z-index: 50;
 }
