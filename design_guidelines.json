@@ -1,0 +1,105 @@
+{
+  "theme": "light",
+  "archetype": "Archetype 1 (Organic & Earthy) mixed with Archetype 5 (Jewel & Luxury)",
+  "brand_name": "NAOM Jewels",
+  "typography": {
+    "heading_font": "Cormorant Garamond",
+    "body_font": "Manrope",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight",
+      "h3": "text-xl sm:text-2xl",
+      "h4": "text-lg sm:text-xl",
+      "body": "text-base leading-relaxed",
+      "small_labels": "text-xs tracking-[0.2em] uppercase"
+    },
+    "pairing_strategy": "Classic Serif Headings + Clean Sans Body"
+  },
+  "colors": {
+    "backgrounds": {
+      "primary": "#FCFAF9",
+      "secondary": "#F5F2EE",
+      "surface": "#FFFFFF"
+    },
+    "text": {
+      "primary": "#1A1918",
+      "secondary": "#5C5A56",
+      "inverse": "#FFFFFF"
+    },
+    "accents": {
+      "primary": "#C99A82",
+      "primary_hover": "#B3856E",
+      "gold": "#D4AF37",
+      "silver": "#C0C0C0",
+      "rose_gold": "#B76E79",
+      "success": "#2E4D43",
+      "error": "#963c32"
+    },
+    "gradients": {
+      "ai_assistant": "bg-gradient-to-br from-[#F5F2EE] via-[#FCFAF9] to-[#C99A82]/10"
+    }
+  },
+  "layout_and_spacing": {
+    "philosophy": "Generous Spacing, Mobile-first, High visual impact with negative space.",
+    "containers": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "grid_bento": "grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-8 lg:gap-12",
+    "product_grid": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8",
+    "section_padding": "py-16 md:py-24 lg:py-32",
+    "card_padding": "p-6 md:p-8"
+  },
+  "surface_strategies": {
+    "header": "Crystal Glass: backdrop-blur-xl bg-white/70 border-b border-black/5 z-50 sticky top-0",
+    "footer": "Solid Deep Tone: bg-[#1A1918] text-white py-20",
+    "product_cards": "Flat background bg-white border border-black/5 hover:border-[#C99A82]/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300",
+    "buttons": {
+      "primary": "bg-[#1A1918] text-white hover:bg-[#333230] rounded-none px-8 py-4 text-sm tracking-[0.1em] uppercase transition-colors",
+      "secondary": "border border-[#1A1918] text-[#1A1918] hover:bg-[#1A1918] hover:text-white rounded-none px-8 py-4 text-sm tracking-[0.1em] uppercase transition-colors"
+    }
+  },
+  "icons_and_assets": {
+    "library": "@phosphor-icons/react",
+    "installation": "yarn add @phosphor-icons/react",
+    "usage": "Use Phosphor Icons with 'Thin' or 'Light' weight to match the delicate jewelry aesthetic."
+  },
+  "image_urls": {
+    "hero_banner": {
+      "url": "https://images.unsplash.com/photo-1771621089868-47780cb7dfb9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwxfHxmZW1hbGUlMjBtb2RlbCUyMGx1eHVyeSUyMGpld2VscnklMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzQ1NjM1MDN8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Young woman with pearl necklace and ring - use for main landing hero section."
+    },
+    "category_rings": {
+      "url": "https://images.unsplash.com/photo-1724937798320-d0c4fac1787d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzF8MHwxfHNlYXJjaHwxfHxkaWFtb25kJTIwcmluZyUyMGVuZ2FnZW1lbnR8ZW58MHx8fHwxNzc0NTYzNTA0fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Close up of a diamond ring on a blue cloth - use for Rings category."
+    },
+    "category_necklaces": {
+      "url": "https://images.pexels.com/photos/6502503/pexels-photo-6502503.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Close-up of a woman's neck showcasing elegant gold necklaces - use for Necklaces category."
+    },
+    "category_earrings": {
+      "url": "https://images.unsplash.com/photo-1758995115555-766abbd9a491?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODh8MHwxfHNlYXJjaHwxfHxnb2xkJTIwZWFycmluZ3MlMjBqZXdlbHJ5fGVufDB8fHx8MTc3NDU2MzQ4OXww&ixlib=rb-4.1.0&q=85",
+      "description": "Gold dangle earrings on black velvet display - use for Earrings category."
+    },
+    "category_bracelets_bangles": {
+      "url": "https://images.pexels.com/photos/4166450/pexels-photo-4166450.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Close-up of gold jewelry elegantly arranged - use for Bracelets/Bangles category."
+    },
+    "ai_assistant_bg": {
+      "url": "https://images.unsplash.com/photo-1770954098628-182216af4d85?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzF8MHwxfHNlYXJjaHwxfHxzb2Z0JTIwbWluaW1hbCUyMHdhcm0lMjBncmFkaWVudCUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzc0NTYzNTA1fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Abstract background with pink and yellow gradients - use as a subtle background for the AI Chat Assistant."
+    }
+  },
+  "component_instructions": {
+    "shadcn_ui": "Use Shadcn components for forms, dialogs, inputs, tabs. Strongly customize them to remove the default 'Vercel-look'. Overwrite borders to be thinner (border-black/10) and use square or very small border-radius (rounded-none or rounded-sm).",
+    "animations": "Use Framer Motion for page transitions, slow smooth scrolling (lenis), and staggered list item entrances. Avoid bouncy or fast animations. Everything should feel 'delicate' and 'expensive'."
+  },
+  "testing_attributes": "All interactive elements MUST include data-testid (e.g., data-testid='add-to-cart-button').",
+  "instructions_to_main_agent": [
+    "Build the UI focusing on a highly premium, minimalist look.",
+    "Always use the media URLs provided here. Never use placeholders.",
+    "Implement the 'Cormorant Garamond' font for all headings, 'Manrope' for body text.",
+    "Ensure the hero image has a subtle overlay if text sits on top (e.g. bg-white/20 with text shadow or a gradient) so it remains completely legible.",
+    "For the AI chat assistant, create a floating interactive widget or a dedicated page with the 'ai_assistant_bg' as a subtle backdrop, styled with glassmorphism.",
+    "Product images should have a subtle zoom on hover (scale-105 with long transition duration).",
+    "Add `@phosphor-icons/react` using yarn and use it across the site for thin, elegant icons.",
+    "All JS/JSX should be written carefully, avoid TSX as requested."
+  ]
+}
