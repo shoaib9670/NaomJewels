@@ -27,6 +27,19 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // Setup Routes
+// Basic routes
+app.get('/', (req, res) => {
+    res.json({
+        status: "Online",
+        message: "NAOM Jewels API is running",
+        documentation: "/api/"
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 app.get('/api/', (req, res) => {
     res.json({ message: "Welcome to NAOM Jewels API", version: "1.0.0" });
 });
