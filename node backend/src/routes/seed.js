@@ -4,7 +4,7 @@ const { getDb } = require('../config/db');
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const db = getDb();
         const existing = await db.collection('products').countDocuments({});
