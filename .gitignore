@@ -82,5 +82,11 @@ memory/test_credentials.md
 android-sdk/frontend/node_modules/.cache/default-development/3.pack
 -e 
 # Environment files
-*.env
-*.env.*
+# Allow frontend .env (only REACT_APP_ vars, not secrets)
+frontend/.env
+!frontend/.env
+# Ignore all backend .env files
+backend/.env
+"node backend"/.env
+*.env.local
+*.env.*.local

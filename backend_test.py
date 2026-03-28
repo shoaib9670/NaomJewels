@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 class NAOMJewelsAPITester:
-    def __init__(self, base_url="https://naom-collection.preview.emergentagent.com/api"):
+    def __init__(self, base_url="http://localhost:8000/api"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
@@ -297,7 +297,7 @@ class NAOMJewelsAPITester:
         self.run_test("Add to Cart for Checkout", "POST", "cart/add", 200, add_cart_data)
         
         # Test create checkout session
-        checkout_data = {"origin_url": "https://naom-collection.preview.emergentagent.com"}
+        checkout_data = {"origin_url": "http://localhost:3000"}
         checkout_result = self.run_test("Create Checkout Session", "POST", "checkout/create-session", 200, checkout_data)
         
         if checkout_result and 'session_id' in checkout_result:

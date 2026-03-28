@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: naom-jewels-backend
+    env: node
+    plan: free
+    rootDir: node backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: naom_jewels
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: JWT_SECRET
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: STRIPE_API_KEY
+        sync: false

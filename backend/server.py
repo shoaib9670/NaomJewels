@@ -371,8 +371,6 @@ async def check_wishlist(product_id: str, user: dict = Depends(get_current_user)
 
 @api_router.post("/checkout/create-session")
 async def create_checkout_session(request: CheckoutRequest, http_request: Request, user: dict = Depends(require_auth)):
-    from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionRequest
-    
     cart = await db.carts.find_one({"user_id": user["id"]}, {"_id": 0})
     if not cart or not cart.get("items"):
         raise HTTPException(status_code=400, detail="Cart is empty")
@@ -386,29 +384,13 @@ async def create_checkout_session(request: CheckoutRequest, http_request: Reques
     if total <= 0:
         raise HTTPException(status_code=400, detail="Invalid cart total")
     
-    api_key = os.environ.get("STRIPE_API_KEY")
-    host_url = str(http_request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
-    
-    stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
-    
-    success_url = f"{request.origin_url}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}"
-    cancel_url = f"{request.origin_url}/cart"
-    
-    checkout_request = CheckoutSessionRequest(
-        amount=round(total, 2),
-        currency="usd",
-        success_url=success_url,
-        cancel_url=cancel_url,
-        metadata={"user_id": user["id"], "user_email": user["email"]}
-    )
-    
-    session = await stripe_checkout.create_checkout_session(checkout_request)
+    session_id = str(uuid.uuid4())
+    url = f"{request.origin_url}/checkout/success?session_id={session_id}"
     
     # Create payment transaction record
     transaction = {
         "id": str(uuid.uuid4()),
-        "session_id": session.session_id,
+        "session_id": session_id,
         "user_id": user["id"],
         "user_email": user["email"],
         "amount": total,
@@ -419,18 +401,15 @@ async def create_checkout_session(request: CheckoutRequest, http_request: Reques
     }
     await db.payment_transactions.insert_one(transaction)
     
-    return {"url": session.url, "session_id": session.session_id}
+    return {"url": url, "session_id": session_id}
 
 @api_router.get("/checkout/status/{session_id}")
 async def get_checkout_status(session_id: str, http_request: Request, user: dict = Depends(require_auth)):
-    from emergentintegrations.payments.stripe.checkout import StripeCheckout
-    
-    api_key = os.environ.get("STRIPE_API_KEY")
-    host_url = str(http_request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
-    
-    stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
-    status = await stripe_checkout.get_checkout_status(session_id)
+    transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+        
+    status = type("MockStatus", (), {"status": "complete", "payment_status": "paid", "amount_total": transaction["amount"], "currency": "usd"})()
     
     # Update transaction status
     transaction = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
@@ -463,72 +442,14 @@ async def get_checkout_status(session_id: str, http_request: Request, user: dict
 
 @api_router.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
-    from emergentintegrations.payments.stripe.checkout import StripeCheckout
-    
-    body = await request.body()
-    signature = request.headers.get("Stripe-Signature")
-    
-    api_key = os.environ.get("STRIPE_API_KEY")
-    host_url = str(request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
-    
-    stripe_checkout = StripeCheckout(api_key=api_key, webhook_url=webhook_url)
-    
-    try:
-        webhook_response = await stripe_checkout.handle_webhook(body, signature)
-        
-        if webhook_response.payment_status == "paid":
-            await db.payment_transactions.update_one(
-                {"session_id": webhook_response.session_id},
-                {"$set": {"payment_status": "paid", "status": "complete"}}
-            )
-        
-        return {"received": True}
-    except Exception as e:
-        logger.error(f"Webhook error: {e}")
-        return {"received": True}
+    return {"received": True}
 
 # ==================== AI ROUTES ====================
 
 @api_router.post("/ai/chat")
 async def ai_chat(chat: ChatMessage, user: dict = Depends(get_current_user)):
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
     session_id = chat.session_id or str(uuid.uuid4())
     
-    # Get chat history for context
-    history = await db.chat_history.find({"session_id": session_id}, {"_id": 0}).sort("timestamp", 1).to_list(20)
-    
-    # Get some products for context
-    products = await db.products.find({}, {"_id": 0, "name": 1, "category": 1, "price": 1, "description": 1}).limit(20).to_list(20)
-    products_context = json.dumps(products[:10]) if products else "[]"
-    
-    system_message = f"""You are NAOM Jewels' AI shopping assistant. You help customers find the perfect jewelry pieces.
-    
-Available product categories: Rings, Necklaces, Earrings, Bracelets, Bangles, Anklets, Pendants, Nose Pins
-Metal types: Gold, Silver, Rose Gold, Platinum
-    
-Some of our products: {products_context}
-
-Be helpful, friendly, and knowledgeable about jewelry. Suggest products based on customer preferences.
-Keep responses concise and engaging. If asked about specific products, provide helpful recommendations."""
-    
-    llm_chat = LlmChat(
-        api_key=api_key,
-        session_id=session_id,
-        system_message=system_message
-    ).with_model("openai", "gpt-4o")
-    
-    # Build conversation context
-    for msg in history[-10:]:
-        if msg.get("role") == "user":
-            await llm_chat.send_message(UserMessage(text=msg["content"]))
-    
-    user_message = UserMessage(text=chat.message)
-    response = await llm_chat.send_message(user_message)
-    
-    # Save to chat history
     timestamp = datetime.now(timezone.utc).isoformat()
     await db.chat_history.insert_one({
         "session_id": session_id,
@@ -537,6 +458,9 @@ Keep responses concise and engaging. If asked about specific products, provide h
         "timestamp": timestamp,
         "user_id": user["id"] if user else None
     })
+    
+    response = "I am a mock AI assistant. How can I help you today?"
+    
     await db.chat_history.insert_one({
         "session_id": session_id,
         "role": "assistant",
@@ -549,55 +473,13 @@ Keep responses concise and engaging. If asked about specific products, provide h
 
 @api_router.get("/ai/recommendations")
 async def get_recommendations(user: dict = Depends(get_current_user)):
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    
-    # Get user's purchase/wishlist history if authenticated
-    user_context = ""
-    if user:
-        wishlist = await db.wishlists.find_one({"user_id": user["id"]}, {"_id": 0})
-        if wishlist and wishlist.get("product_ids"):
-            wishlist_products = await db.products.find(
-                {"id": {"$in": wishlist["product_ids"][:5]}}, 
-                {"_id": 0, "name": 1, "category": 1}
-            ).to_list(5)
-            user_context = f"User's wishlist includes: {json.dumps(wishlist_products)}"
-    
-    # Get random products to recommend from
+    # Fallback to random selection
+    import random
     all_products = await db.products.find({}, {"_id": 0}).limit(30).to_list(30)
     
     if not all_products:
         return {"recommendations": [], "reason": "No products available"}
-    
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
-    
-    llm_chat = LlmChat(
-        api_key=api_key,
-        session_id=f"rec_{str(uuid.uuid4())}",
-        system_message="You are a jewelry recommendation engine. Respond ONLY with a JSON array of product IDs."
-    ).with_model("openai", "gpt-4o")
-    
-    products_json = json.dumps([{"id": p["id"], "name": p["name"], "category": p["category"], "price": p["price"]} for p in all_products])
-    
-    prompt = f"""Given these products: {products_json}
-{user_context}
-Select 4-6 diverse product IDs that would make good recommendations. Consider variety in category and price.
-Respond ONLY with a JSON array of IDs, e.g.: ["id1", "id2", "id3"]"""
-    
-    try:
-        response = await llm_chat.send_message(UserMessage(text=prompt))
-        # Parse the response to get product IDs
-        import re
-        ids_match = re.search(r'\[.*?\]', response, re.DOTALL)
-        if ids_match:
-            recommended_ids = json.loads(ids_match.group())
-            recommended = [p for p in all_products if p["id"] in recommended_ids]
-            if recommended:
-                return {"recommendations": recommended, "reason": "AI-powered recommendations"}
-    except Exception as e:
-        logger.error(f"AI recommendation error: {e}")
-    
-    # Fallback to random selection
-    import random
+
     recommended = random.sample(all_products, min(6, len(all_products)))
     return {"recommendations": recommended, "reason": "Featured products"}
 

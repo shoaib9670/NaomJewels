@@ -61,7 +61,7 @@ Build an e-commerce jewelry app named NAOM Jewels with inspiration from giva.co 
 ### Environment Variables
 - `MONGO_URL` - MongoDB connection
 - `STRIPE_API_KEY` - Stripe test key
-- `EMERGENT_LLM_KEY` - OpenAI API key
+- `OPENAI_API_KEY` - OpenAI API key
 - `JWT_SECRET` - JWT signing secret
 
 ## What's Been Implemented (Jan 2026)
