@@ -4,7 +4,15 @@ const { getDb } = require('../config/db');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.route('/')
+    .get(async (req, res) => {
+        return handleSeed(req, res);
+    })
+    .post(async (req, res) => {
+        return handleSeed(req, res);
+    });
+
+async function handleSeed(req, res) {
     try {
         const db = getDb();
         const existing = await db.collection('products').countDocuments({});
@@ -49,6 +57,6 @@ router.get('/', async (req, res) => {
         console.error('Seed error:', e);
         res.status(500).json({ detail: "Seed failed: " + e.message });
     }
-});
+}
 
 module.exports = router;
